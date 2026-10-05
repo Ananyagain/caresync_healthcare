@@ -12,7 +12,8 @@
 					"type": "LinkedServiceReference"
 				},
 				"secretName": "dbr-access-token"
-			}
+			},
+			"existingClusterId": "1005-141207-fy1zzgdv"
 		}
 	}
 }
