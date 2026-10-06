@@ -70,7 +70,7 @@
 					"source": {
 						"type": "PostgreSqlV2Source",
 						"query": {
-							"value": "SELECT * FROM PUBLIC.@{activity('Read table details').output.firstRow.source_table_name} \n@{\n    if(equals(activity('Read table details').output.firstRow.load_type, 'FULL')\n    , '',\n    concat('where', activity('Read Watermark').output.firstRow.watermark_value , ' > ', '''', variables('watermark_value'), '''')\n    )\n}",
+							"value": "SELECT * FROM PUBLIC.@{activity('Read table details').output.firstRow.source_table_name} \n@{\n    if(equals(activity('Read table details').output.firstRow.load_type, 'FULL')\n    , '',\n    concat(' where ', activity('Read Watermark').output.firstRow.watermark_value , ' > ', '''', variables('watermark_value'), '''')\n    )\n}",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00"
