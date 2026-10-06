@@ -48,7 +48,11 @@
 				"outputs": [
 					{
 						"referenceName": "DS_Parquet",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "landing",
+							"folder": "dummy"
+						}
 					}
 				]
 			}
