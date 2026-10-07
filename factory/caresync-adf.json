@@ -5,6 +5,10 @@
 			"email_recipient": {
 				"type": "string",
 				"value": "ananyagain4@gmail.com"
+			},
+			"env": {
+				"type": "string",
+				"value": "dev"
 			}
 		}
 	},
