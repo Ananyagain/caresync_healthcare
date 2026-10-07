@@ -136,7 +136,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"notebookPath": {
-									"value": "/Users/ananyagain4@gmail.com/caresync-dbr-repo/Gold/@{item().gold_table_name}",
+									"value": "/Users/ananyagain4@gmail.com/caresync-dbr-repo/Gold/NB_@{item().gold_table_name}",
 									"type": "Expression"
 								}
 							},
