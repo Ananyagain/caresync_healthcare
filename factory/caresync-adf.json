@@ -1,0 +1,12 @@
+{
+	"name": "caresync-adf",
+	"properties": {
+		"globalParameters": {
+			"email_recipient": {
+				"type": "string",
+				"value": "ananyagain4@gmail.com"
+			}
+		}
+	},
+	"location": "eastus"
+}
