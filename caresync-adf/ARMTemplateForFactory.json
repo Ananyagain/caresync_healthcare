@@ -697,6 +697,23 @@
 										],
 										"scriptBlockExecutionTimeout": "02:00:00"
 									}
+								},
+								{
+									"name": "Pipeline failed",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "Execute PL_loading_all_tables",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "inner pipeline failed (loading all tables)",
+										"errorCode": "500"
+									}
 								}
 							]
 						}
@@ -1197,6 +1214,23 @@
 											}
 										],
 										"scriptBlockExecutionTimeout": "02:00:00"
+									}
+								},
+								{
+									"name": "Pipeline failed",
+									"type": "Fail",
+									"dependsOn": [
+										{
+											"activity": "Silver to Gold",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "PL_Silver_to_Gold FAILED",
+										"errorCode": "500"
 									}
 								}
 							]
