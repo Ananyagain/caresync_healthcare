@@ -147,6 +147,23 @@
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
 							}
+						},
+						{
+							"name": "Pipeline failed",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "Execute PL_loading_all_tables",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "inner pipeline failed (loading all tables)",
+								"errorCode": "500"
+							}
 						}
 					]
 				}
