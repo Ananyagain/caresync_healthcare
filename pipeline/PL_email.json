@@ -1,0 +1,214 @@
+{
+	"name": "PL_email",
+	"properties": {
+		"activities": [
+			{
+				"name": "read all table status",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM [ctrl].[audit_log] where adf_run_id = '@{pipeline().parameters.adf_run_id}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "prepare email body header",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "body header",
+					"value": "Ingestion pipeline status"
+				}
+			},
+			{
+				"name": "prepare email body footer",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "body footer",
+					"value": "for support contact ananyagain4@gmail.com"
+				}
+			},
+			{
+				"name": "email subject",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "check overall fail count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "email subject",
+					"value": {
+						"value": "@{pipeline().globalParameters.env} | @{if(greater(activity('check overall fail count').output.firstRow.count,0),'FAILED', 'SUCCESS')} | caresync master pipeline run",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "check overall fail count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT count(*) as count FROM [ctrl].[audit_log] where adf_run_id = '@{pipeline().parameters.adf_run_id}' \nand [status] != 'SUCCESS'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzureSqlTable",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "prepare logic app body",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "email subject",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "prepare email body footer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "prepare email body header",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "read all table status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "logic app body",
+					"value": {
+						"value": "{\n    \"subject\":@{variables('email subject')},\n    \"email_recipients\":@{pipeline().globalParameters.email_recipient},\n    \"body_header\":@{variables('body header')},\n    \"body_footer\":@{variables('body footer')}\n    \"status_table\":@{activity('read all table status').output.value}\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "send email",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "prepare logic app body",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"url": {
+						"value": "@pipeline().globalParameters.logic_app_url",
+						"type": "Expression"
+					},
+					"body": {
+						"value": "@variables('logic app body')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"adf_run_id": {
+				"type": "string",
+				"defaultValue": "4f6b5677-6590-405f-9835-19ce0b52af21"
+			}
+		},
+		"variables": {
+			"body header": {
+				"type": "String"
+			},
+			"body footer": {
+				"type": "String"
+			},
+			"email subject": {
+				"type": "String"
+			},
+			"logic app body": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
