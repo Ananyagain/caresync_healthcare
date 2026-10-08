@@ -38,3 +38,8 @@ CI/CD for both platforms — feature-branch and pull-request workflows for Azure
 
 Multiple consumption surfaces — a multi-page Databricks dashboard, a scoped Genie Agent, and a workspace-wide Genie ONE natural-language interface, all built on the same gold tables.
 
+
+Tech Stack
+
+Azure Data Factory · Azure Data Lake Storage Gen2 · Azure SQL Database · Azure Key Vault · Azure Logic Apps · Databricks · Delta Lake · Unity Catalog · PySpark · PostgreSQL · GitHub
+
